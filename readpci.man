@@ -1,0 +1,98 @@
+.TH readpci 8 "@TODAY@" "@VERSION@" "The PCI Utilities"
+.SH NAME
+readpci \- read or write PCI registers
+.SH SYNOPSIS
+.B readpci
+.RB [ options ]
+.SH DESCRIPTION
+.B readpci
+is a utility for reading and writing PCI registers in a memory
+mapped range.
+
+If you are going to report bugs in PCI device drivers or in
+.I readpci
+itself, please include output of "lspci -vvx" or even better "lspci -vvxxx"
+(however, see below for possible caveats).
+
+Access to read and write registers in PCI configuration space is restricted to root,
+So,
+.I readpci
+isn't available to normal users.
+
+.SH OPTIONS
+
+.SS Program options
+.TP
+.B -v
+Be verbose and display detailed information about the actions of readpci.
+.TP
+.B -w [<value>]
+The value to write to the address, usually specified like 0x0123abcd. Using
+this argument causes a read after write to the register to report the value
+read back after write. This parameter is optional but requires -a.
+.TP
+.B -W [<value>]
+The value to write to the address, usually specified like 0x0123abcd. Using
+this argument AVOIDS a read after write to the register and DOES NOT report the
+value read back after write. This parameter is optional, but cannot be used
+with -w and requires -a.
+.TP
+.B -a [<address>]
+The address to read or write from (or both), as an offset from the start of the
+BAR. Typically specified like 0x0123abcd.
+.TP
+.B -b [<value>]
+Optional parameter, defaults to 0 if not specified. BAR number to access if
+other than BAR0.
+.TP
+.B -m
+Read from MSI-X BAR.
+.TP
+.B -D
+Add more PCI library debugging.
+.TP
+.B -q
+Don't print the banner during each read or write.
+
+.SS Options for selection of devices
+.TP
+.B -s [[[[<domain>]:]<bus>]:][<device>][.[<func>]]
+Show only devices in the specified domain (in case your machine has several host bridges,
+they can either share a common bus number space or each of them can address a PCI domain
+of its own; domains are numbered from 0 to ffff), bus (0 to ff), device (0 to 1f) and function (0 to 7).
+Each component of the device address can be omitted or set to "*", both meaning "any value". All numbers are
+hexadecimal.  E.g., "0:" means all devices on bus 0, "0" means all functions of device 0
+on any bus, "0.3" selects third function of device 0 on all buses and ".4" shows only
+the fourth function of each device.
+.TP
+.B -d [<vendor>]:[<device>][:<class>[:<prog-if>]]
+Show only devices with specified vendor, device, class ID, and programming interface.
+The ID's are given in hexadecimal and may be omitted or given as "*", both meaning
+"any value". The class ID can contain "x" characters which stand for "any digit".
+
+.P
+The relative order of positional arguments and options is undefined.
+New options can be added in future versions, but they will always
+have a single argument not separated from the option by any spaces,
+so they can be easily ignored if not recognized.
+
+.SH FILES
+.TP
+.B @IDSDIR@/pci.ids
+A list of all known PCI ID's (vendors, devices, classes and subclasses).
+
+.SH BUGS
+
+There might be some, but none known at this time. If you find one please
+let the list know.
+
+.SH SEE ALSO
+.BR lspci (8),
+.BR setpci (8),
+.BR pci.ids (5),
+.BR update-pciids (8),
+.BR pcilib (7)
+
+.SH AUTHOR
+The PCI Utilities are maintained by Martin Mares <mj@ucw.cz>.
+The readpci utility was written by Intel.

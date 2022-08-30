@@ -49,9 +49,9 @@ DIRINSTALL=install -d
 STRIP=-s
 ifdef CROSS_COMPILE
 STRIP+=--strip-program $(CROSS_COMPILE)strip
-CC=$(CROSS_COMPILE)gcc
+CC:=$(CROSS_COMPILE)gcc
 else
-CC=cc
+CC:=cc
 endif
 AR=$(CROSS_COMPILE)ar
 RANLIB=$(CROSS_COMPILE)ranlib
@@ -74,7 +74,7 @@ LMRINC=lmr/lmr.h $(UTILINC)
 
 export
 
-all: lib/$(PCIIMPLIB) lspci$(EXEEXT) setpci$(EXEEXT) example$(EXEEXT) lspci.8 setpci.8 pcilib.7 pci.ids.5 update-pciids update-pciids.8 $(PCI_IDS) pcilmr$(EXEEXT) pcilmr.8
+all: lib/$(PCIIMPLIB) lspci$(EXEEXT) setpci$(EXEEXT) readpci$(EXEEXT) example$(EXEEXT) lspci.8 setpci.8 readpci.8 pcilib.7 pci.ids.5 update-pciids update-pciids.8 $(PCI_IDS) pcilmr$(EXEEXT) pcilmr.8
 
 lib/$(PCIIMPLIB): $(PCIINC) force
 	$(MAKE) -C lib all
@@ -112,6 +112,10 @@ ls-kernel.o: override CFLAGS+=$(LIBKMOD_CFLAGS)
 update-pciids: update-pciids.sh
 	sed <$< >$@ "s@^DEST=.*@DEST=$(if $(IDSDIR),$(IDSDIR)/,)$(PCI_IDS)@;s@^PCI_COMPRESSED_IDS=.*@PCI_COMPRESSED_IDS=$(PCI_COMPRESSED_IDS)@;s@VERSION=.*@VERSION=$(VERSION)@"
 	chmod +x $@
+
+# add the readpci executable
+readpci$(EXEEXT): readpci.o lib/$(PCILIB)
+readpci.o: readpci.c pciutils.h $(PCIINC)
 
 # The example of use of libpci
 example$(EXEEXT): example.o lib/$(PCIIMPLIB)
@@ -155,7 +159,7 @@ TAGS:
 
 clean:
 	rm -f `find . -name "*~" -o -name "*.[oa]" -o -name "\#*\#" -o -name TAGS -o -name core -o -name "*.orig"`
-	rm -f update-pciids lspci$(EXEEXT) setpci$(EXEEXT) example$(EXEEXT) lib/config.* *.[578] pci.ids.gz lib/*.pc lib/*.so lib/*.so.* lib/*.dll lib/*.def lib/dllrsrc.rc *-rsrc.rc tags pcilmr$(EXEEXT)
+	rm -f update-pciids lspci$(EXEEXT) setpci$(EXEEXT) readpci$(EXEEXT) example$(EXEEXT) lib/config.* *.[578] pci.ids.gz lib/*.pc lib/*.so lib/*.so.* lib/*.dll lib/*.def lib/dllrsrc.rc *-rsrc.rc tags pcilmr$(EXEEXT)
 	rm -rf maint/dist
 
 distclean: clean
@@ -165,14 +169,14 @@ install: all
 	$(DIRINSTALL) -m 755 $(DESTDIR)$(BINDIR) $(DESTDIR)$(SBINDIR) $(DESTDIR)$(IDSDIR) $(DESTDIR)$(MANDIR)/man8 $(DESTDIR)$(MANDIR)/man7 $(DESTDIR)$(MANDIR)/man5
 	$(INSTALL) -c -m 755 $(STRIP) lspci$(EXEEXT) $(DESTDIR)$(LSPCIDIR)
 	$(INSTALL) -c -m 755 $(STRIP) setpci$(EXEEXT) $(DESTDIR)$(SBINDIR)
-	$(INSTALL) -c -m 755 $(STRIP) pcilmr$(EXEEXT) $(DESTDIR)$(SBINDIR)
+	$(INSTALL) -c -m 755 $(STRIP) readpci$(EXEEXT) $(DESTDIR)$(SBINDIR)
 	$(INSTALL) -c -m 755 update-pciids $(DESTDIR)$(SBINDIR)
 ifneq ($(IDSDIR),)
 	$(INSTALL) -c -m 644 $(PCI_IDS) $(DESTDIR)$(IDSDIR)
 else
 	$(INSTALL) -c -m 644 $(PCI_IDS) $(DESTDIR)$(SBINDIR)
 endif
-	$(INSTALL) -c -m 644 lspci.8 setpci.8 pcilmr.8 update-pciids.8 $(DESTDIR)$(MANDIR)/man8
+	$(INSTALL) -c -m 644 lspci.8 setpci.8 readpci.8 pcilmr.8 update-pciids.8 $(DESTDIR)$(MANDIR)/man8
 	$(INSTALL) -c -m 644 pcilib.7 $(DESTDIR)$(MANDIR)/man7
 	$(INSTALL) -c -m 644 pci.ids.5 $(DESTDIR)$(MANDIR)/man5
 ifeq ($(SHARED),yes)
@@ -218,13 +222,13 @@ endif
 endif
 
 uninstall: all
-	rm -f $(DESTDIR)$(LSPCIDIR)/lspci$(EXEEXT) $(DESTDIR)$(SBINDIR)/setpci$(EXEEXT) $(DESTDIR)$(SBINDIR)/pcilmr$(EXEEXT) $(DESTDIR)$(SBINDIR)/update-pciids
+	rm -f $(DESTDIR)$(LSPCIDIR)/lspci$(EXEEXT) $(DESTDIR)$(SBINDIR)/setpci$(EXEEXT) $(DESTDIR)$(SBINDIR)/readpci$(EXEEXT) $(DESTDIR)$(SBINDIR)/pcilmr$(EXEEXT) $(DESTDIR)$(SBINDIR)/update-pciids
 ifneq ($(IDSDIR),)
 	rm -f $(DESTDIR)$(IDSDIR)/$(PCI_IDS)
 else
 	rm -f $(DESTDIR)$(SBINDIR)/$(PCI_IDS)
 endif
-	rm -f $(DESTDIR)$(MANDIR)/man8/lspci.8 $(DESTDIR)$(MANDIR)/man8/setpci.8 $(DESTDIR)$(MANDIR)/man8/pcilmr.8 $(DESTDIR)$(MANDIR)/man8/update-pciids.8
+	rm -f $(DESTDIR)$(MANDIR)/man8/lspci.8 $(DESTDIR)$(MANDIR)/man8/setpci.8 $(DESTDIR)$(MANDIR)/man8/readpci.8 $(DESTDIR)$(MANDIR)/man8/pcilmr.8 $(DESTDIR)$(MANDIR)/man8/update-pciids.8
 	rm -f $(DESTDIR)$(MANDIR)/man7/pcilib.7
 	rm -f $(DESTDIR)$(MANDIR)/man5/pci.ids.5
 ifeq ($(SHARED)_$(LIBEXT),yes_dll)
