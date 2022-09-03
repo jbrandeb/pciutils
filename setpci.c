@@ -747,7 +747,7 @@ static void parse_op(char *c, struct group *group)
     parse_err("Unaligned register address %02x", op->addr);
 
   /* Parse the values */
-  for (j=0; j<n; j++)
+  for (j=0; value && j<n; j++)
     {
       unsigned int ll, lim;
       e = strchr(value, ',');

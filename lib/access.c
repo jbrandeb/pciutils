@@ -105,7 +105,7 @@ pci_read_data(struct pci_dev *d, void *buf, int pos, int len)
 byte
 pci_read_byte(struct pci_dev *d, int pos)
 {
-  byte buf;
+  byte buf = 0;
   pci_read_data(d, &buf, pos, 1);
   return buf;
 }
@@ -113,7 +113,7 @@ pci_read_byte(struct pci_dev *d, int pos)
 word
 pci_read_word(struct pci_dev *d, int pos)
 {
-  word buf;
+  word buf = 0;
   pci_read_data(d, &buf, pos, 2);
   return le16_to_cpu(buf);
 }
@@ -121,7 +121,7 @@ pci_read_word(struct pci_dev *d, int pos)
 u32
 pci_read_long(struct pci_dev *d, int pos)
 {
-  u32 buf;
+  u32 buf = 0;
   pci_read_data(d, &buf, pos, 4);
   return le32_to_cpu(buf);
 }
