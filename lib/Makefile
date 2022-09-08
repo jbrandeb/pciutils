@@ -120,7 +120,7 @@ dllrsrc.o: dllrsrc.rc
 	$(WINDRES) --input=$< --output=$@ --input-format=rc --output-format=coff
 OBJS += dllrsrc
 endif
-CFLAGS += -fPIC -fvisibility=hidden
+CFLAGS += -fPIC -fvisibility=hidden -Wextra -Wall -fsanitize=address,undefined
 $(PCILIB): $(addsuffix .o,$(OBJS))
 	$(CC) -shared $(CFLAGS) $(LDFLAGS) $(PCILIB_LDFLAGS) -o $@ $^ $(LIB_LDLIBS)
 ifeq ($(LIBEXT),dll)

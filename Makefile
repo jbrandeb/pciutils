@@ -2,7 +2,8 @@
 # (c) 1998--2024 Martin Mares <mj@ucw.cz>
 
 OPT=-O2
-CFLAGS=$(OPT) -Wextra -Wall -W -Wno-parentheses -Wstrict-prototypes -Wmissing-prototypes
+CFLAGS=$(OPT) -Wextra -Wall -W -Wno-parentheses -Wstrict-prototypes -Wmissing-prototypes -fsanitize=address,undefined
+LDFLAGS=-lasan -lubsan
 
 VERSION=3.12.0
 DATE=2024-04-05
