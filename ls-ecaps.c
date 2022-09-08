@@ -582,7 +582,7 @@ cap_vc(struct device *d, int where)
 	  printf("%c%s%c", (j ? ' ' : '\t'), vc_arb_selects[j], FLAG(rcap, 1 << j));
 
       printf("\n\t\t\tCtrl:\tEnable%c ID=%d ArbSelect=%s TC/VC=%02x\n",
-	FLAG(rctrl, 1 << 31),
+	FLAG(rctrl, 1UL << 31),
 	BITS(rctrl, 24, 3),
 	TABLE(vc_arb_selects, BITS(rctrl, 17, 3), buf),
 	BITS(rctrl, 0, 8));

@@ -196,9 +196,9 @@ get_conf_long(struct device *d, unsigned int pos)
 {
   check_conf_range(d, pos, 4);
   return d->config[pos] |
-    (d->config[pos+1] << 8) |
-    (d->config[pos+2] << 16) |
-    (d->config[pos+3] << 24);
+    ((u32)(d->config[pos+1]) << 8) |
+    ((u32)(d->config[pos+2]) << 16) |
+    ((u32)(d->config[pos+3]) << 24);
 }
 
 /*** Sorting ***/
